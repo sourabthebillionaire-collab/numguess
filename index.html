@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -751,7 +750,7 @@ function endGame(won){
   }
   renderStats();renderLevel();renderDailyBadge();
   playCount++;
-  if(playCount%3===0){adBreak({type:'next',name:'interstitial',adBreakDone:()={}})}
+  if(playCount%3===0){adBreak({type:'next',name:'interstitial',adBreakDone:()=>{}})}
 }
 
 function showResult(won,xp){
