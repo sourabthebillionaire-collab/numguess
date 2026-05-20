@@ -1,6 +1,7 @@
 {
   "name": "NumGuess",
   "short_name": "NumGuess",
+  "description": "A fun number guessing game with levels, achievements and rewards.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0c12",
