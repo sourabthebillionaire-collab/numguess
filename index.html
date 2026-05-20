@@ -1,19 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>🎯 NumGuess – Daily Brain Game</title>
-<meta name="description" content="Guess the secret number! Daily challenges, streaks, achievements and rewards."/>
-
-<!-- ═══════════════════════════════════════════
-  GOOGLE ADSENSE · Replace ca-pub-XXXXXXXXXXXXXXXX
-  1. Sign up at adsense.google.com
-  2. Replace all ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID
-  3. Replace slot numbers (1111111111 etc.) with your actual Ad Unit IDs
-  4. For rewarded ads, enable "Ad Placement API" in AdSense settings
-  Revenue strategy: 3 display ads + rewarded interstitials after game end
-════════════════════════════════════════════ -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>🎯 NumGuess</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 <script>
   window.adsbygoogle = window.adsbygoogle || [];
@@ -21,566 +12,470 @@
   function adConfig(o) { adsbygoogle.push(o); }
   adConfig({ preloadAdBreaks: 'on', sound: 'on' });
 </script>
-
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:#07080d;
-  --surface:#0d0f18;
-  --card:#111422;
-  --card2:#181c2e;
-  --border:rgba(255,255,255,0.05);
-  --border2:rgba(255,255,255,0.11);
-  --accent:#ff3860;
-  --accent2:#ff6b3d;
+  --bg:#0a0c12;
+  --card:#13161f;
+  --card2:#1a1e2e;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --red:#ff3860;
   --cyan:#00d4ff;
   --gold:#ffcc44;
-  --gold2:#ff9a00;
   --green:#0dde9a;
   --purple:#b06aff;
-  --text:#eef0f8;
-  --muted:rgba(255,255,255,0.35);
+  --orange:#ff8c42;
+  --text:#f0f2ff;
+  --muted:rgba(255,255,255,0.4);
   --muted2:rgba(255,255,255,0.15);
-  --glow-red:rgba(255,56,96,0.18);
-  --glow-gold:rgba(255,204,68,0.15);
-  --glow-cyan:rgba(0,212,255,0.12);
 }
 
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-
-body{
-  font-family:'Space Grotesk',sans-serif;
+html,body{
+  width:100%;
+  min-height:100vh;
+  overflow-x:hidden;
   background:var(--bg);
   color:var(--text);
-  min-height:100vh;
-  display:grid;
-  grid-template-columns:160px minmax(0,480px) 160px;
-  grid-template-rows:auto 1fr auto;
-  align-items:start;
-  justify-content:center;
-  gap:0;
+  font-family:'Nunito',sans-serif;
+  -webkit-tap-highlight-color:transparent;
 }
 
-/* Noise texture overlay */
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  opacity:.4;
-}
-
-/* ══ HEADER ══ */
-header{
-  grid-column:1/-1;
-  background:var(--surface);
+/* ── HEADER ── */
+.header{
+  position:sticky;top:0;z-index:50;
+  background:var(--card);
   border-bottom:1px solid var(--border);
-  padding:0 16px;
-  display:flex;align-items:center;gap:12px;
-  height:58px;
-  position:sticky;top:0;z-index:100;
+  padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;
 }
-
 .logo{
-  font-family:'Syne',sans-serif;
-  font-size:18px;font-weight:800;
-  background:linear-gradient(135deg,var(--accent),var(--gold));
+  font-size:18px;font-weight:900;
+  background:linear-gradient(135deg,var(--red),var(--gold));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  white-space:nowrap;letter-spacing:-.02em;flex-shrink:0;
+  white-space:nowrap;flex-shrink:0;
 }
-
-.header-ad{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  min-height:50px;max-height:58px;overflow:hidden;
-}
-
 .level-chip{
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:6px;
   background:var(--card2);border:1px solid var(--border2);
-  border-radius:99px;padding:5px 12px;flex-shrink:0;
+  border-radius:99px;padding:5px 10px;flex-shrink:0;
 }
-.lv-label{font-size:11px;font-weight:700;color:var(--gold);font-family:'JetBrains Mono',monospace}
-.xp-bar{width:60px;height:4px;background:var(--border2);border-radius:4px;overflow:hidden}
-.xp-inner{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.xp-label{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.lv-txt{font-size:11px;font-weight:800;color:var(--gold);font-family:'JetBrains Mono',monospace}
+.xp-bar{width:50px;height:4px;background:var(--border2);border-radius:4px;overflow:hidden}
+.xp-inner{height:100%;background:linear-gradient(90deg,var(--gold),var(--orange));border-radius:4px;transition:width .6s}
+.xp-lbl{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
 
-/* ══ SIDEBARS ══ */
-.sidebar{
-  padding:16px 8px;
-  display:flex;flex-direction:column;align-items:center;gap:12px;
-}
-.sidebar.left{grid-column:1;grid-row:2;align-items:flex-end}
-.sidebar.right{grid-column:3;grid-row:2;align-items:flex-start}
-
-.ad-sk-wrap{
-  width:140px;min-height:280px;
-  background:rgba(255,255,255,.018);
-  border:1px dashed var(--border);
-  border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;
-  writing-mode:vertical-rl;
-}
-
-/* ══ MAIN ══ */
-main{
-  grid-column:2;grid-row:2;
-  padding:16px 14px 24px;
-  display:flex;flex-direction:column;gap:12px;
-  position:relative;z-index:1;
-}
-
-/* ══ FOOTER ══ */
-footer{
-  grid-column:1/-1;
-  background:var(--surface);
-  border-top:1px solid var(--border);
-  padding:8px 16px;
-  display:flex;align-items:center;justify-content:center;
+/* ── TOP BANNER AD ── */
+.ad-banner{
+  width:100%;display:flex;justify-content:center;
+  background:rgba(255,255,255,.02);
+  border-bottom:1px solid var(--border);
   min-height:52px;
 }
 
-/* ══ STATS BAR ══ */
-.stats-bar{
+/* ── MAIN ── */
+.main{
+  width:100%;
+  max-width:480px;
+  margin:0 auto;
+  padding:12px 12px 80px;
+  display:flex;flex-direction:column;gap:10px;
+}
+
+/* ── STATS ── */
+.stats{
   display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
 }
 .stat{
   background:var(--card);border:1px solid var(--border);
-  border-radius:14px;padding:10px 6px;text-align:center;
-  position:relative;overflow:hidden;transition:border-color .2s;
+  border-radius:12px;padding:10px 4px;text-align:center;
 }
-.stat::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:var(--accent-color,var(--accent));opacity:.4;
-}
-.stat:hover{border-color:var(--border2)}
 .stat-v{
   font-family:'JetBrains Mono',monospace;
-  font-size:22px;font-weight:700;line-height:1;
-  color:var(--accent-color,var(--cyan));
+  font-size:20px;font-weight:700;line-height:1;
 }
-.stat-l{font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:.07em;text-transform:uppercase}
-.stat.games{--accent-color:var(--cyan)}
-.stat.winr{--accent-color:var(--purple)}
-.stat.streak{--accent-color:var(--gold)}
-.stat.best{--accent-color:var(--green)}
+.stat-l{font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+.sv-cyan{color:var(--cyan)} .sv-purple{color:var(--purple)}
+.sv-gold{color:var(--gold)} .sv-green{color:var(--green)}
 
-/* ══ DAILY CHALLENGE ══ */
+/* ── DAILY ── */
 .daily{
-  display:flex;align-items:center;gap:12px;
+  display:flex;align-items:center;gap:10px;
   background:linear-gradient(135deg,rgba(176,106,255,.1),rgba(0,212,255,.06));
   border:1px solid rgba(176,106,255,.2);
-  border-radius:14px;padding:12px 16px;cursor:pointer;
-  transition:all .2s;
+  border-radius:14px;padding:12px 14px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  active:opacity:.8;
 }
-.daily:hover{border-color:rgba(176,106,255,.4);transform:translateY(-1px)}
-.daily-ico{font-size:28px}
-.daily-body{flex:1}
-.daily-ttl{font-size:13px;font-weight:700;color:var(--purple)}
+.daily-ico{font-size:26px;flex-shrink:0}
+.daily-body{flex:1;min-width:0}
+.daily-ttl{font-size:13px;font-weight:800;color:var(--purple)}
 .daily-sub{font-size:11px;color:var(--muted);margin-top:1px}
-.daily-badge-done{
-  font-size:10px;font-weight:700;color:var(--green);
-  background:rgba(13,222,154,.1);border:1px solid rgba(13,222,154,.25);
-  border-radius:99px;padding:4px 10px;
-}
-.daily-badge-go{
-  font-size:10px;font-weight:700;color:var(--gold);
+.daily-go{
+  font-size:10px;font-weight:800;color:var(--gold);
   background:rgba(255,204,68,.1);border:1px solid rgba(255,204,68,.25);
-  border-radius:99px;padding:4px 10px;
+  border-radius:99px;padding:4px 10px;flex-shrink:0;white-space:nowrap;
+}
+.daily-done{
+  font-size:10px;font-weight:800;color:var(--green);
+  background:rgba(13,222,154,.1);border:1px solid rgba(13,222,154,.25);
+  border-radius:99px;padding:4px 10px;flex-shrink:0;white-space:nowrap;
 }
 
-/* ══ GAME CARD ══ */
+/* ── GAME CARD ── */
 .game-card{
   background:var(--card);border:1px solid var(--border);
-  border-radius:20px;padding:20px;
-  position:relative;overflow:hidden;
-}
-.game-card::after{
-  content:'';position:absolute;
-  top:-60px;right:-60px;width:200px;height:200px;
-  background:radial-gradient(circle,var(--glow-red),transparent 70%);
-  pointer-events:none;
+  border-radius:18px;padding:16px;
 }
 
-/* ── Mode selector ── */
-.mode-row{display:flex;gap:5px;margin-bottom:16px;background:var(--bg);border-radius:11px;padding:3px}
+/* ── MODES ── */
+.modes{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:5px;background:var(--bg);border-radius:12px;padding:4px;
+  margin-bottom:12px;
+}
 .mode-btn{
-  flex:1;padding:7px 3px;border-radius:9px;border:none;
+  padding:8px 2px;border-radius:9px;border:none;
   background:transparent;color:var(--muted);
-  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;
-  cursor:pointer;transition:all .2s;text-align:center;line-height:1.3;
+  font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;
+  cursor:pointer;text-align:center;line-height:1.3;
+  -webkit-tap-highlight-color:transparent;
+  transition:all .15s;
 }
-.mode-btn .m-ico{display:block;font-size:17px;margin-bottom:2px}
-.mode-btn.active{background:var(--card2);color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.mode-btn .ico{display:block;font-size:16px;margin-bottom:2px}
+.mode-btn.active{background:var(--card2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.4)}
 
-/* ── Difficulty ── */
-.diff-row{display:flex;gap:5px;margin-bottom:14px}
+/* ── DIFFICULTY ── */
+.diffs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px}
 .diff-btn{
-  flex:1;padding:6px 3px;border-radius:9px;
+  padding:7px 2px;border-radius:9px;
   border:1.5px solid var(--border);background:transparent;
-  color:var(--muted);
-  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;
-  cursor:pointer;transition:all .2s;
+  color:var(--muted);font-family:'Nunito',sans-serif;
+  font-size:11px;font-weight:800;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:all .15s;
 }
-.diff-btn.active{
-  border-color:var(--accent);color:var(--accent);
-  background:rgba(255,56,96,.08);
-}
-.diff-btn:hover:not(.active){border-color:var(--border2);color:var(--text)}
+.diff-btn.active{border-color:var(--red);color:var(--red);background:rgba(255,56,96,.08)}
 
-/* ── Meta row ── */
-.meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+/* ── META ROW ── */
+.meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .range-txt{font-size:12px;color:var(--muted)}
-.timer-display{
+.timer{
   font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;
   color:var(--cyan);display:none;
 }
-.timer-display.warn{color:var(--gold2);animation:pulse .6s infinite alternate}
-.timer-display.danger{color:var(--accent);animation:pulse .3s infinite alternate}
+.timer.warn{color:var(--orange);animation:blink .5s infinite alternate}
+.timer.danger{color:var(--red)}
 
-/* ── Attempt dots ── */
-.dots{display:flex;justify-content:center;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+/* ── DOTS ── */
+.dots{display:flex;justify-content:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .dot{
-  width:11px;height:11px;border-radius:50%;
-  background:rgba(255,255,255,.07);border:1px solid var(--border2);
-  transition:all .25s;
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,.08);border:1px solid var(--border2);
+  transition:all .2s;
 }
-.dot.used{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent)}
-.dot.active{background:var(--gold);border-color:var(--gold);transform:scale(1.4);box-shadow:0 0 10px var(--gold)}
-.dot.won{background:var(--green);border-color:var(--green);box-shadow:0 0 8px var(--green)}
+.dot.used{background:var(--red);border-color:var(--red)}
+.dot.active{background:var(--gold);border-color:var(--gold);transform:scale(1.4);box-shadow:0 0 8px var(--gold)}
+.dot.won{background:var(--green);border-color:var(--green)}
 
-/* ── Proximity ── */
-.prox-wrap{margin-bottom:12px;display:none}
-.prox-header{display:flex;justify-content:space-between;margin-bottom:5px}
-.prox-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* ── PROXIMITY ── */
+.prox{margin-bottom:10px;display:none}
+.prox-top{display:flex;justify-content:space-between;margin-bottom:4px}
+.prox-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
 .prox-dist{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
 .prox-track{height:6px;background:var(--border);border-radius:6px;overflow:hidden}
-.prox-fill{height:100%;border-radius:6px;width:0;transition:width .4s ease,background .4s ease}
-.temp-txt{text-align:center;font-size:12px;font-weight:700;margin-top:5px;min-height:18px}
+.prox-fill{height:100%;border-radius:6px;width:0;transition:width .4s,background .4s}
+.temp-txt{text-align:center;font-size:12px;font-weight:800;margin-top:5px;min-height:18px}
 
-/* ── Message ── */
-.msg-box{
-  font-size:15px;font-weight:700;min-height:22px;
-  margin-bottom:12px;color:var(--gold);text-align:center;
-  font-family:'Syne',sans-serif;letter-spacing:-.01em;
+/* ── MESSAGE ── */
+.msg{
+  font-size:15px;font-weight:800;min-height:22px;
+  text-align:center;color:var(--gold);margin-bottom:12px;
 }
 
-/* ── Input ── */
+/* ── INPUT ── */
 .input-row{display:flex;gap:8px;margin-bottom:10px}
 input[type=number]{
-  flex:1;padding:12px;border-radius:11px;
-  border:2px solid var(--border2);background:rgba(255,255,255,.035);
+  flex:1;padding:13px 8px;border-radius:12px;
+  border:2px solid var(--border2);background:rgba(255,255,255,.04);
   color:var(--text);font-family:'JetBrains Mono',monospace;
-  font-size:28px;font-weight:700;text-align:center;outline:none;
-  transition:border-color .2s,box-shadow .2s;
-  -moz-appearance:textfield;
+  font-size:26px;font-weight:700;text-align:center;outline:none;
+  -moz-appearance:textfield;width:0;
+  transition:border-color .2s;
 }
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
-input[type=number]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,56,96,.12)}
+input[type=number]:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,56,96,.12)}
 
 .guess-btn{
-  padding:12px 18px;border-radius:11px;border:none;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;font-family:'Syne',sans-serif;
-  font-size:14px;font-weight:800;cursor:pointer;
+  padding:13px 18px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--red),#ff6b3d);
+  color:#fff;font-family:'Nunito',sans-serif;
+  font-size:15px;font-weight:900;cursor:pointer;
+  box-shadow:0 4px 16px rgba(255,56,96,.35);
+  white-space:nowrap;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
   transition:transform .1s,box-shadow .2s;
-  box-shadow:0 4px 18px rgba(255,56,96,.3);white-space:nowrap;
 }
-.guess-btn:active{transform:scale(.94)}
-.guess-btn:hover{box-shadow:0 6px 24px rgba(255,56,96,.45)}
-.guess-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.guess-btn:active{transform:scale(.93);box-shadow:0 2px 8px rgba(255,56,96,.2)}
 
-/* ── Quick actions ── */
-.actions-row{display:flex;gap:6px}
+/* ── ACTIONS ── */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:0}
 .act-btn{
-  flex:1;padding:8px 4px;border-radius:10px;
+  padding:9px 6px;border-radius:10px;
   border:1.5px solid var(--border);background:transparent;
-  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;
-  cursor:pointer;transition:all .2s;
+  font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;
+  cursor:pointer;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
 }
 .act-btn.hint{color:var(--purple);border-color:rgba(176,106,255,.2)}
-.act-btn.hint:hover{border-color:var(--purple);background:rgba(176,106,255,.08)}
-.act-btn.share{color:var(--cyan);border-color:rgba(0,212,255,.18)}
-.act-btn.share:hover{border-color:var(--cyan);background:rgba(0,212,255,.06)}
+.act-btn.hint:active{background:rgba(176,106,255,.1)}
+.act-btn.share{color:var(--cyan);border-color:rgba(0,212,255,.2)}
+.act-btn.share:active{background:rgba(0,212,255,.08)}
 .act-btn:disabled{opacity:.2;cursor:not-allowed}
 
-/* ── History ── */
-.history{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto;margin-top:12px}
+/* ── HISTORY ── */
+.history{
+  display:flex;flex-direction:column;gap:4px;
+  max-height:160px;overflow-y:auto;margin-top:12px;
+}
 .h-item{
   display:flex;align-items:center;justify-content:space-between;
-  background:rgba(255,255,255,.025);border:1px solid var(--border);
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
   border-radius:9px;padding:7px 12px;
   animation:slideIn .2s ease;
 }
-.h-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px}
-.h-hint{font-size:11px;font-weight:600}
-.c-high{color:var(--accent)} .c-low{color:var(--cyan)}
-.c-win{color:var(--green)} .c-muted{color:var(--muted)}
+.h-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px}
+.h-hint{font-size:11px;font-weight:700}
+.c-red{color:var(--red)} .c-cyan{color:var(--cyan)}
+.c-green{color:var(--green)} .c-muted{color:var(--muted);font-size:10px}
 
-/* ══ REWARDED AD SECTION ══ */
-.rewards-section{
-  border-top:1px solid var(--border);
-  padding-top:14px;margin-top:12px;
-}
-.rewards-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.rewards-ttl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* ── REWARDS ── */
+.rewards{border-top:1px solid var(--border);padding-top:12px;margin-top:12px}
+.rewards-hdr{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.rewards-ttl{font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 .rewards-tag{
-  font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  background:rgba(255,204,68,.1);color:var(--gold);
-  border:1px solid rgba(255,204,68,.2);border-radius:99px;padding:2px 8px;
+  font-size:9px;font-weight:800;color:var(--gold);
+  background:rgba(255,204,68,.1);border:1px solid rgba(255,204,68,.2);
+  border-radius:99px;padding:2px 7px;
 }
-.reward-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.reward-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .reward-btn{
-  display:flex;flex-direction:column;gap:2px;
-  padding:11px 12px;border-radius:12px;
+  padding:11px 10px;border-radius:12px;
   border:1.5px solid rgba(255,204,68,.15);
   background:rgba(255,204,68,.03);
-  cursor:pointer;transition:all .22s;text-align:left;width:100%;
+  cursor:pointer;transition:all .15s;text-align:left;width:100%;
+  -webkit-tap-highlight-color:transparent;
 }
-.reward-btn:hover:not(:disabled){
-  border-color:rgba(255,204,68,.4);background:rgba(255,204,68,.07);
-  transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,204,68,.08);
-}
-.reward-btn:disabled{opacity:.25;cursor:not-allowed}
-.reward-btn .r-top{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--gold)}
-.reward-btn .r-ico{font-size:16px}
-.reward-btn .r-sub{font-size:9px;color:var(--muted)}
+.reward-btn:active{background:rgba(255,204,68,.08);transform:scale(.97)}
+.reward-btn:disabled{opacity:.2;cursor:not-allowed}
+.r-top{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--gold);margin-bottom:2px}
+.r-ico{font-size:15px}
+.r-sub{font-size:9px;color:var(--muted)}
 .reward-btn.used .r-top{color:var(--green)}
 .reward-btn.used{border-color:rgba(13,222,154,.18)}
 
-/* ══ RESULT OVERLAY ══ */
-.result-area{display:none;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:4px 0}
-.result-area.show{display:flex}
-.r-emoji{font-size:62px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275)}
-.r-title{font-size:24px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:-.02em}
+/* ── RESULT ── */
+.result{display:none;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:4px 0}
+.result.show{display:flex}
+.r-emoji{font-size:58px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275)}
+.r-title{font-size:26px;font-weight:900}
 .r-sub{font-size:13px;color:var(--muted)}
 .r-xp{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold)}
 .r-badges{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:4px}
-.r-badge{
-  font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;
-  border:1px solid;background:rgba(255,255,255,.04);
-}
-.btn-play-again{
-  width:100%;margin-top:10px;padding:11px;border-radius:12px;
+.r-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid;background:rgba(255,255,255,.04)}
+.play-again{
+  width:100%;margin-top:10px;padding:13px;border-radius:13px;
   border:1.5px solid var(--border2);background:transparent;
-  color:var(--text);font-family:'Space Grotesk',sans-serif;
-  font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;
-  letter-spacing:.02em;
+  color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:14px;font-weight:800;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:all .15s;
 }
-.btn-play-again:hover{background:rgba(255,255,255,.05);border-color:var(--border2)}
+.play-again:active{background:rgba(255,255,255,.05)}
 
-/* ══ IN-FEED AD (between game card and leaderboard) ══ */
-.infeed-ad{
-  display:flex;justify-content:center;align-items:center;
-  min-height:90px;background:rgba(255,255,255,.015);
-  border:1px dashed var(--border);border-radius:12px;
-  font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;
+/* ── IN-FEED AD ── */
+.infeed{
+  width:100%;min-height:80px;
+  background:rgba(255,255,255,.015);
+  border:1px solid var(--border);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;overflow:hidden;
 }
 
-/* ══ LEADERBOARD / ACHIEVEMENTS ══ */
-.section-card{
+/* ── ACHIEVEMENTS ── */
+.section{
   background:var(--card);border:1px solid var(--border);
-  border-radius:16px;padding:16px;
+  border-radius:16px;padding:14px;
 }
 .section-ttl{
-  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;
 }
 .section-ttl::after{content:'';flex:1;height:1px;background:var(--border)}
-
 .ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.ach-item{
+.ach{
   background:var(--card2);border:1px solid var(--border);
   border-radius:11px;padding:10px 6px;text-align:center;
-  transition:all .2s;opacity:.35;
+  opacity:.3;transition:all .2s;
 }
-.ach-item.unlocked{opacity:1;border-color:rgba(255,204,68,.2)}
-.ach-item:hover.unlocked{border-color:rgba(255,204,68,.4);transform:translateY(-1px)}
+.ach.on{opacity:1;border-color:rgba(255,204,68,.2)}
 .ach-ico{font-size:22px;display:block;margin-bottom:3px}
-.ach-name{font-size:9px;font-weight:700;color:var(--text);letter-spacing:.03em}
+.ach-name{font-size:9px;font-weight:800;color:var(--text)}
 .ach-hint{font-size:8px;color:var(--muted);margin-top:1px}
 
-/* ══ AD OVERLAY (Rewarded) ══ */
+/* ── BOTTOM AD ── */
+.bottom-ad{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:center;align-items:center;
+  min-height:54px;padding:2px 0;
+}
+
+/* ── AD OVERLAY ── */
 .ad-overlay{
   display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.92);backdrop-filter:blur(12px);
-  z-index:1000;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(10px);
+  z-index:200;align-items:center;justify-content:center;padding:20px;
 }
 .ad-overlay.show{display:flex}
 .ad-modal{
   background:var(--card);border:1px solid var(--border2);
-  border-radius:22px;padding:28px 24px;
-  max-width:340px;width:90%;text-align:center;
-  animation:slideUp .3s cubic-bezier(.175,.885,.32,1.275);
+  border-radius:20px;padding:24px 20px;width:100%;max-width:340px;
+  text-align:center;animation:slideUp .3s ease;
 }
-.ad-modal-ico{font-size:48px;margin-bottom:6px}
-.ad-modal-ttl{font-size:19px;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:4px}
-.ad-modal-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:18px}
-.ad-prog-track{height:6px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:6px}
-.ad-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:6px;width:0;transition:width .3s linear}
-.ad-timer-txt{font-size:10px;color:var(--muted);margin-bottom:16px;font-family:'JetBrains Mono',monospace}
-.ad-btn-row{display:flex;gap:8px;justify-content:center}
-.btn-close-ad{
-  padding:9px 18px;border-radius:10px;border:1.5px solid var(--border);
+.ad-ico{font-size:44px;margin-bottom:6px}
+.ad-ttl{font-size:18px;font-weight:900;margin-bottom:4px}
+.ad-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+.ad-track{height:6px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:6px}
+.ad-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--orange));border-radius:6px;width:0;transition:width .3s linear}
+.ad-timer{font-size:10px;color:var(--muted);margin-bottom:14px;font-family:'JetBrains Mono',monospace}
+.ad-btns{display:flex;gap:8px;justify-content:center}
+.btn-cancel{
+  flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);
   background:transparent;color:var(--muted);
-  font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
 }
-.btn-close-ad:hover{border-color:var(--border2);color:var(--text)}
-.btn-claim-reward{
-  display:none;padding:9px 18px;border-radius:10px;border:none;
+.btn-claim{
+  flex:1;padding:10px;border-radius:10px;border:none;
   background:var(--gold);color:#0a0a0a;
-  font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;
+  cursor:pointer;display:none;
 }
-.btn-claim-reward.ready{display:block}
-.btn-claim-reward:hover{opacity:.88}
+.btn-claim.ready{display:block}
 
-/* ══ COMBO POPUP ══ */
-.combo-pop{
-  position:fixed;top:80px;left:50%;transform:translateX(-50%) scale(.7);
-  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
-  color:var(--gold);text-shadow:0 0 30px var(--gold);
-  pointer-events:none;opacity:0;z-index:500;
-  transition:all .25s cubic-bezier(.175,.885,.32,1.275);
-  white-space:nowrap;
-}
-.combo-pop.show{opacity:1;transform:translateX(-50%) scale(1)}
-
-/* ══ ACHIEVEMENT TOAST ══ */
+/* ── ACHIEVEMENT TOAST ── */
 .ach-toast{
-  position:fixed;bottom:70px;right:16px;
+  position:fixed;bottom:68px;left:12px;right:12px;
   background:var(--card2);border:1px solid rgba(255,204,68,.3);
-  border-radius:14px;padding:11px 14px;
+  border-radius:14px;padding:12px 14px;
   display:flex;align-items:center;gap:10px;
   box-shadow:0 8px 32px rgba(0,0,0,.5);
-  transform:translateX(120%);transition:transform .4s cubic-bezier(.175,.885,.32,1.275);
-  z-index:800;max-width:260px;
+  transform:translateY(120px);transition:transform .4s cubic-bezier(.175,.885,.32,1.275);
+  z-index:100;
 }
-.ach-toast.show{transform:translateX(0)}
-.ach-t-ico{font-size:28px}
-.ach-t-body .ach-t-lbl{font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.07em;text-transform:uppercase}
-.ach-t-body .ach-t-name{font-size:13px;font-weight:700}
-.ach-t-body .ach-t-desc{font-size:10px;color:var(--muted)}
+.ach-toast.show{transform:translateY(0)}
+.at-ico{font-size:26px;flex-shrink:0}
+.at-lbl{font-size:9px;font-weight:800;color:var(--gold);letter-spacing:.07em;text-transform:uppercase}
+.at-name{font-size:13px;font-weight:800}
+.at-desc{font-size:10px;color:var(--muted)}
 
-/* ══ TOAST ══ */
+/* ── TOAST ── */
 .toast{
-  position:fixed;bottom:16px;left:50%;
+  position:fixed;bottom:68px;left:50%;
   transform:translateX(-50%) translateY(16px);
   background:var(--card2);border:1px solid var(--border2);
   border-radius:99px;padding:9px 18px;
   font-size:12px;font-weight:700;opacity:0;
-  transition:all .3s ease;pointer-events:none;z-index:2000;white-space:nowrap;
+  transition:all .3s;pointer-events:none;z-index:150;
+  white-space:nowrap;max-width:90vw;text-align:center;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ══ ANIMATIONS ══ */
+/* ── ANIMATIONS ── */
 @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes popIn{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-@keyframes pulse{from{opacity:1}to{opacity:.5}}
-@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-
-/* ══ RESPONSIVE ══ */
-@media(max-width:800px){
-  body{grid-template-columns:1fr;justify-items:center}
-  .sidebar{display:none}
-  main{grid-column:1;max-width:480px;width:100%}
-}
+@keyframes blink{from{opacity:1}to{opacity:.4}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
 
-<!-- ═══ HEADER ═══ -->
-<header>
+<!-- HEADER -->
+<div class="header">
   <div class="logo">🎯 NumGuess</div>
-
-  <div class="header-ad">
-    <!-- LEADERBOARD 728×90 → Replace slot -->
-    <ins class="adsbygoogle"
-      style="display:inline-block;width:728px;height:58px;max-width:100%"
-      data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-      data-ad-slot="1111111111"></ins>
-    <script>(adsbygoogle=window.adsbygoogle||[]).push({})</script>
-  </div>
-
   <div class="level-chip">
-    <span class="lv-label" id="lv-txt">Lv.1</span>
+    <span class="lv-txt" id="lv-txt">Lv.1</span>
     <div class="xp-bar"><div class="xp-inner" id="xp-inner" style="width:0%"></div></div>
-    <span class="xp-label" id="xp-label">0xp</span>
+    <span class="xp-lbl" id="xp-lbl">0xp</span>
   </div>
-</header>
+</div>
 
-<!-- ═══ LEFT SIDEBAR ═══ -->
-<aside class="sidebar left">
-  <!-- SKYSCRAPER 160×600 → Replace slot -->
-  <ins class="adsbygoogle ad-sk-wrap"
-    style="display:inline-block;width:140px;height:600px"
+<!-- TOP BANNER AD -->
+<div class="ad-banner">
+  <ins class="adsbygoogle"
+    style="display:inline-block;width:320px;height:50px"
     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-    data-ad-slot="2222222222"></ins>
+    data-ad-slot="1111111111"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({})</script>
-</aside>
+</div>
 
-<!-- ═══ MAIN ═══ -->
-<main>
+<!-- MAIN -->
+<div class="main">
 
-  <!-- Stats bar -->
-  <div class="stats-bar">
-    <div class="stat games"><div class="stat-v" id="s-games">0</div><div class="stat-l">Games</div></div>
-    <div class="stat winr"><div class="stat-v" id="s-win">–</div><div class="stat-l">Win %</div></div>
-    <div class="stat streak"><div class="stat-v" id="s-streak">0</div><div class="stat-l">🔥 Streak</div></div>
-    <div class="stat best"><div class="stat-v" id="s-best">–</div><div class="stat-l">Best</div></div>
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-v sv-cyan" id="s-g">0</div><div class="stat-l">Games</div></div>
+    <div class="stat"><div class="stat-v sv-purple" id="s-w">–</div><div class="stat-l">Win%</div></div>
+    <div class="stat"><div class="stat-v sv-gold" id="s-s">0</div><div class="stat-l">🔥Streak</div></div>
+    <div class="stat"><div class="stat-v sv-green" id="s-b">–</div><div class="stat-l">Best</div></div>
   </div>
 
-  <!-- Daily Challenge -->
+  <!-- Daily -->
   <div class="daily" id="daily-row" onclick="launchDaily()">
     <div class="daily-ico">📅</div>
     <div class="daily-body">
       <div class="daily-ttl">Daily Challenge</div>
-      <div class="daily-sub" id="daily-sub">Same secret number for everyone!</div>
+      <div class="daily-sub">Same number for everyone today!</div>
     </div>
-    <div id="daily-badge-go" class="daily-badge-go">Play →</div>
-    <div id="daily-badge-done" class="daily-badge-done" style="display:none">✓ Done</div>
+    <div class="daily-go" id="daily-go">Play →</div>
+    <div class="daily-done" id="daily-done" style="display:none">✓ Done</div>
   </div>
 
   <!-- Game Card -->
   <div class="game-card">
 
-    <!-- Mode tabs -->
-    <div class="mode-row" id="mode-row">
-      <button class="mode-btn active" data-mode="classic">
-        <span class="m-ico">🎯</span>Classic
-      </button>
-      <button class="mode-btn" data-mode="speed">
-        <span class="m-ico">⚡</span>Speed
-      </button>
-      <button class="mode-btn" data-mode="sudden">
-        <span class="m-ico">💀</span>1-Strike
-      </button>
-      <button class="mode-btn" data-mode="hot">
-        <span class="m-ico">🌡️</span>Hot/Cold
-      </button>
+    <!-- Modes -->
+    <div class="modes" id="modes">
+      <button class="mode-btn active" data-mode="classic"><span class="ico">🎯</span>Classic</button>
+      <button class="mode-btn" data-mode="speed"><span class="ico">⚡</span>Speed</button>
+      <button class="mode-btn" data-mode="sudden"><span class="ico">💀</span>1-Strike</button>
+      <button class="mode-btn" data-mode="hot"><span class="ico">🌡️</span>Hot/Cold</button>
     </div>
 
     <!-- Difficulty -->
-    <div class="diff-row" id="diff-row">
+    <div class="diffs" id="diffs">
       <button class="diff-btn active" data-i="0">Easy</button>
       <button class="diff-btn" data-i="1">Medium</button>
       <button class="diff-btn" data-i="2">Hard</button>
       <button class="diff-btn" data-i="3">Insane</button>
     </div>
 
-    <!-- Active game -->
+    <!-- Game UI -->
     <div id="game-ui">
-      <div class="meta-row">
-        <span class="range-txt" id="range-txt">Guess 1 – 50</span>
-        <span class="timer-display" id="timer-el">60s</span>
+      <div class="meta">
+        <span class="range-txt" id="range-txt">Guess 1–50</span>
+        <span class="timer" id="timer">60s</span>
       </div>
 
-      <div class="dots" id="dots-row"></div>
+      <div class="dots" id="dots"></div>
 
-      <div class="prox-wrap" id="prox-wrap">
-        <div class="prox-header">
+      <div class="prox" id="prox">
+        <div class="prox-top">
           <span class="prox-lbl">🌡 Temperature</span>
           <span class="prox-dist" id="prox-dist"></span>
         </div>
@@ -588,279 +483,247 @@ input[type=number]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(25
         <div class="temp-txt" id="temp-txt"></div>
       </div>
 
-      <div class="msg-box" id="msg">Enter your first guess!</div>
+      <div class="msg" id="msg">Enter your first guess!</div>
 
       <div class="input-row">
-        <input type="number" id="num-input" min="1" max="50" placeholder="?" autocomplete="off"/>
+        <input type="number" id="num-in" min="1" max="50" placeholder="?" autocomplete="off" inputmode="numeric"/>
         <button class="guess-btn" id="guess-btn" onclick="doGuess()">Guess!</button>
       </div>
 
-      <div class="actions-row">
+      <div class="actions">
         <button class="act-btn hint" id="hint-btn" onclick="useHint()" disabled>💡 Hint</button>
         <button class="act-btn share" onclick="shareResult()">📤 Share</button>
       </div>
 
       <div class="history" id="history"></div>
 
-      <!-- Rewarded Ad Perks -->
-      <div class="rewards-section">
-        <div class="rewards-header">
-          <span class="rewards-ttl">Watch Ad · Earn Perks</span>
-          <span class="rewards-tag">⚡ Free</span>
+      <!-- Rewards -->
+      <div class="rewards">
+        <div class="rewards-hdr">
+          <span class="rewards-ttl">Watch Ad · Get Perk</span>
+          <span class="rewards-tag">⚡ FREE</span>
         </div>
         <div class="reward-grid">
           <button class="reward-btn" id="rwd-extra" onclick="watchAd('extra')">
-            <span class="r-top"><span class="r-ico">➕</span>+2 Guesses</span>
-            <span class="r-sub">Extend your attempt</span>
+            <div class="r-top"><span class="r-ico">➕</span>+2 Guesses</div>
+            <div class="r-sub">Extend this round</div>
           </button>
           <button class="reward-btn" id="rwd-hint" onclick="watchAd('hint')">
-            <span class="r-top"><span class="r-ico">💡</span>Free Hint</span>
-            <span class="r-sub">Narrow the range</span>
+            <div class="r-top"><span class="r-ico">💡</span>Free Hint</div>
+            <div class="r-sub">Narrow the range</div>
           </button>
           <button class="reward-btn" id="rwd-reveal" onclick="watchAd('reveal')">
-            <span class="r-top"><span class="r-ico">👁</span>Reveal Digit</span>
-            <span class="r-sub">See first digit</span>
+            <div class="r-top"><span class="r-ico">👁</span>Reveal Digit</div>
+            <div class="r-sub">See first digit</div>
           </button>
           <button class="reward-btn" id="rwd-xp" onclick="watchAd('xp')">
-            <span class="r-top"><span class="r-ico">⚡</span>2× XP</span>
-            <span class="r-sub">Double XP this game</span>
+            <div class="r-top"><span class="r-ico">⚡</span>2× XP</div>
+            <div class="r-sub">Double XP boost</div>
           </button>
         </div>
       </div>
-
     </div><!-- /game-ui -->
 
     <!-- Result -->
-    <div class="result-area" id="result-area">
+    <div class="result" id="result">
       <div class="r-emoji" id="r-emoji">🎉</div>
       <div class="r-title" id="r-title">You Won!</div>
       <div class="r-sub" id="r-sub"></div>
       <div class="r-xp" id="r-xp"></div>
       <div class="r-badges" id="r-badges"></div>
-      <button class="btn-play-again" onclick="newGame()">▶ Play Again</button>
+      <button class="play-again" onclick="newGame()">▶ Play Again</button>
     </div>
 
   </div><!-- /game-card -->
 
-  <!-- In-feed ad (high visibility, between game & achievements) -->
-  <div class="infeed-ad">
-    <!-- RESPONSIVE IN-FEED → Replace slot -->
+  <!-- In-feed Ad -->
+  <div class="infeed">
     <ins class="adsbygoogle"
-      style="display:block;width:100%;min-height:90px"
+      style="display:block;width:100%;min-height:80px"
       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-      data-ad-slot="3333333333"
+      data-ad-slot="2222222222"
       data-ad-format="fluid"
       data-ad-layout="in-article"></ins>
     <script>(adsbygoogle=window.adsbygoogle||[]).push({})</script>
   </div>
 
   <!-- Achievements -->
-  <div class="section-card">
+  <div class="section">
     <div class="section-ttl">🏆 Achievements</div>
     <div class="ach-grid" id="ach-grid"></div>
   </div>
 
-</main>
+</div><!-- /main -->
 
-<!-- ═══ RIGHT SIDEBAR ═══ -->
-<aside class="sidebar right">
-  <!-- SKYSCRAPER 160×600 → Replace slot -->
-  <ins class="adsbygoogle ad-sk-wrap"
-    style="display:inline-block;width:140px;height:600px"
-    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-    data-ad-slot="4444444444"></ins>
-  <script>(adsbygoogle=window.adsbygoogle||[]).push({})</script>
-</aside>
-
-<!-- ═══ FOOTER ═══ -->
-<footer>
-  <!-- BANNER 728×90 → Replace slot -->
+<!-- Bottom sticky ad -->
+<div class="bottom-ad">
   <ins class="adsbygoogle"
-    style="display:inline-block;width:728px;height:50px;max-width:100%"
+    style="display:inline-block;width:320px;height:50px"
     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-    data-ad-slot="5555555555"></ins>
+    data-ad-slot="3333333333"></ins>
   <script>(adsbygoogle=window.adsbygoogle||[]).push({})</script>
-</footer>
+</div>
 
-<!-- ═══ AD OVERLAY (Rewarded) ═══ -->
+<!-- Ad Overlay -->
 <div class="ad-overlay" id="ad-overlay">
   <div class="ad-modal">
-    <div class="ad-modal-ico" id="ad-ico">🎬</div>
-    <div class="ad-modal-ttl" id="ad-ttl">Watch a short ad</div>
-    <div class="ad-modal-sub" id="ad-sub">Watch to earn your reward</div>
-    <div class="ad-prog-track"><div class="ad-prog-fill" id="ad-prog"></div></div>
-    <div class="ad-timer-txt" id="ad-timer">Watching… 5s</div>
-    <div class="ad-btn-row">
-      <button class="btn-close-ad" onclick="cancelAd()">Cancel</button>
-      <button class="btn-claim-reward" id="btn-claim" onclick="claimReward()">Claim Reward!</button>
+    <div class="ad-ico" id="ad-ico">🎬</div>
+    <div class="ad-ttl" id="ad-ttl">Watch a short ad</div>
+    <div class="ad-sub" id="ad-sub">Watch to earn your reward</div>
+    <div class="ad-track"><div class="ad-fill" id="ad-fill"></div></div>
+    <div class="ad-timer" id="ad-timer-txt">Watching… 5s</div>
+    <div class="ad-btns">
+      <button class="btn-cancel" onclick="cancelAd()">Cancel</button>
+      <button class="btn-claim" id="btn-claim" onclick="claimReward()">Claim!</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ ACHIEVEMENT TOAST ═══ -->
+<!-- Achievement Toast -->
 <div class="ach-toast" id="ach-toast">
-  <div class="ach-t-ico" id="ach-t-ico">🏆</div>
-  <div class="ach-t-body">
-    <div class="ach-t-lbl">Achievement Unlocked</div>
-    <div class="ach-t-name" id="ach-t-name"></div>
-    <div class="ach-t-desc" id="ach-t-desc"></div>
+  <div class="at-ico" id="at-ico">🏆</div>
+  <div>
+    <div class="at-lbl">Achievement Unlocked</div>
+    <div class="at-name" id="at-name"></div>
+    <div class="at-desc" id="at-desc"></div>
   </div>
 </div>
 
-<!-- ═══ COMBO POPUP ═══ -->
-<div class="combo-pop" id="combo-pop"></div>
-
-<!-- ═══ TOAST ═══ -->
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  NUMGUESS · Enhanced Edition
-//  Ad Revenue Strategy:
-//  • 5 display ad slots (header, 2× sidebar, in-feed, footer)
-//  • 4 rewarded ad perks (each play session offers 1–4 views)
-//  • Interstitial shown on every 3rd "Play Again" click
-//  • Daily challenge creates daily return visits
-//  • Addictive loop: XP → Levels → Achievements → Streaks
-// ═══════════════════════════════════════════════════════
-
-// ── CONFIG ──────────────────────────────────────────────
-const DIFFS = [
-  { label:'Easy',   range:50,  maxGuess:8,  time:0,  xpBase:50  },
-  { label:'Medium', range:100, maxGuess:7,  time:0,  xpBase:100 },
-  { label:'Hard',   range:200, maxGuess:6,  time:60, xpBase:200 },
-  { label:'Insane', range:500, maxGuess:5,  time:45, xpBase:400 },
+// ── CONFIG ──
+const DIFFS=[
+  {range:50, maxGuess:8, time:0,  xp:50 },
+  {range:100,maxGuess:7, time:0,  xp:100},
+  {range:200,maxGuess:6, time:60, xp:200},
+  {range:500,maxGuess:5, time:45, xp:400},
 ];
-const MODES = {
-  classic:{ label:'Classic', timer:false },
-  speed:  { label:'Speed',   timer:true  },
-  sudden: { label:'1-Strike',timer:false },
-  hot:    { label:'Hot/Cold',timer:false },
-};
-const XP_PER_LEVEL = 500;
-const ACHIEVEMENTS = [
-  { id:'first',    ico:'🎯', name:'First Blood',    desc:'Win your first game',         check:s=>s.wins>=1 },
-  { id:'streak3',  ico:'🔥', name:'On Fire',        desc:'3-game win streak',           check:s=>s.streak>=3 },
-  { id:'streak7',  ico:'🌋', name:'Unstoppable',    desc:'7-game win streak',           check:s=>s.streak>=7 },
-  { id:'perfect',  ico:'⚡', name:'Perfect Guess',  desc:'Win on your first try',       check:s=>s.lastGuessCount===1 },
-  { id:'speed10',  ico:'💨', name:'Speed Demon',    desc:'Win in speed mode in <10s',   check:s=>s.lastMode==='speed'&&s.lastTime<=10 },
-  { id:'insane',   ico:'💀', name:'Insane Mode',    desc:'Win on Insane difficulty',    check:s=>s.lastDiff===3&&s.lastWon },
-  { id:'daily',    ico:'📅', name:'Daily Devotee',  desc:'Complete the daily challenge',check:s=>s.dailyDone },
-  { id:'level5',   ico:'🚀', name:'Rising Star',    desc:'Reach Level 5',               check:s=>s.level>=5 },
-  { id:'level10',  ico:'🌟', name:'Veteran',        desc:'Reach Level 10',              check:s=>s.level>=10 },
-  { id:'games25',  ico:'🎮', name:'Dedicated',      desc:'Play 25 games',               check:s=>s.games>=25 },
-  { id:'hotcold',  ico:'🌡️', name:'Thermometer',   desc:'Win Hot/Cold mode',           check:s=>s.lastMode==='hot'&&s.lastWon },
-  { id:'nohint',   ico:'🧠', name:'Pure Skill',     desc:'Win without any hints',       check:s=>s.lastWon&&!s.usedHint },
+const XP_PER_LEVEL=500;
+const ACHIEVEMENTS=[
+  {id:'first',  ico:'🎯',name:'First Blood',  desc:'Win your first game',        check:s=>s.wins>=1},
+  {id:'str3',   ico:'🔥',name:'On Fire',      desc:'3-game win streak',          check:s=>s.streak>=3},
+  {id:'str7',   ico:'🌋',name:'Unstoppable',  desc:'7-game win streak',          check:s=>s.streak>=7},
+  {id:'perfect',ico:'⚡',name:'Perfect',      desc:'Win on first guess',         check:s=>s.lastGuesses===1},
+  {id:'speed',  ico:'💨',name:'Speed Demon',  desc:'Win Speed mode in <10s',     check:s=>s.lastMode==='speed'&&s.lastTime<=10&&s.lastWon},
+  {id:'insane', ico:'💀',name:'Insane Win',   desc:'Win on Insane difficulty',   check:s=>s.lastDiff===3&&s.lastWon},
+  {id:'daily',  ico:'📅',name:'Daily Devotee',desc:'Complete daily challenge',   check:s=>s.dailyDone},
+  {id:'lv5',    ico:'🚀',name:'Rising Star',  desc:'Reach Level 5',              check:s=>s.level>=5},
+  {id:'lv10',   ico:'🌟',name:'Veteran',      desc:'Reach Level 10',             check:s=>s.level>=10},
+  {id:'g25',    ico:'🎮',name:'Dedicated',    desc:'Play 25 games',              check:s=>s.games>=25},
+  {id:'hot',    ico:'🌡️',name:'Thermometer', desc:'Win Hot/Cold mode',          check:s=>s.lastMode==='hot'&&s.lastWon},
+  {id:'nohint', ico:'🧠',name:'Pure Skill',   desc:'Win without hints',          check:s=>s.lastWon&&!s.usedHint},
 ];
 
-// ── STATE ────────────────────────────────────────────────
-let state = loadState();
-let G = {}; // current game
-let timerInterval = null;
-let playAgainCount = 0;
-let pendingReward = null;
-let adTimerInterval = null;
-let xpMultiplier = 1;
+// ── STATE ──
+let S=load();
+let G={diffIdx:0,mode:'classic'};
+let timerInt=null,adInt=null,pendingReward=null,xpMult=1,playCount=0;
 
-// ── PERSIST ──────────────────────────────────────────────
-function loadState(){
-  try{
-    return JSON.parse(localStorage.getItem('ng_state'))||defaultState();
-  }catch(e){return defaultState()}
+function load(){
+  try{return JSON.parse(localStorage.getItem('ng'))||def()}catch(e){return def()}
 }
-function defaultState(){
-  return {
-    games:0,wins:0,streak:0,bestGuess:null,
-    xp:0,level:1,achievements:[],
-    dailyDate:'',dailyDone:false,
-    lastGuessCount:0,lastMode:'classic',lastDiff:0,
-    lastWon:false,lastTime:0,usedHint:false,
-  };
-}
-function save(){ localStorage.setItem('ng_state',JSON.stringify(state)); }
+function def(){return{games:0,wins:0,streak:0,best:null,xp:0,level:1,achs:[],dailyDate:'',dailyDone:false,lastGuesses:0,lastMode:'classic',lastDiff:0,lastWon:false,lastTime:0,usedHint:false}}
+function save(){localStorage.setItem('ng',JSON.stringify(S))}
 
-// ── DAILY SEED ───────────────────────────────────────────
-function todayKey(){ return new Date().toISOString().slice(0,10); }
-function dailySeed(){
-  const d=todayKey();
-  let h=0;for(let i=0;i<d.length;i++){h=(h<<5)-h+d.charCodeAt(i);h|=0}
-  return Math.abs(h);
-}
-function seededRand(seed,max){
-  let x=Math.sin(seed)*10000;
-  x=x-Math.floor(x);
-  return Math.floor(x*max)+1;
-}
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function dailySeed(){const d=todayKey();let h=0;for(let i=0;i<d.length;i++){h=(h<<5)-h+d.charCodeAt(i);h|=0}return Math.abs(h)}
+function seeded(seed,max){let x=Math.sin(seed)*10000;x=x-Math.floor(x);return Math.floor(x*max)+1}
 
-// ── GAME INIT ────────────────────────────────────────────
+// ── GAME ──
 function newGame(daily=false){
-  clearInterval(timerInterval);
-  xpMultiplier = 1;
-
-  const diff = DIFFS[G.diffIdx||0];
-  const mode = G.mode||'classic';
-
-  G = {
-    diffIdx: G.diffIdx||0,
-    mode: mode,
-    daily: daily,
-    max: diff.range,
-    maxGuess: mode==='sudden'?1:diff.maxGuess,
-    secret: daily ? seededRand(dailySeed(),diff.range) : Math.floor(Math.random()*diff.range)+1,
-    guesses: 0,
-    history: [],
-    done: false,
-    startTime: Date.now(),
-    timeLeft: diff.time,
-    usedHint: false,
-    extraGuesses: 0,
+  clearInterval(timerInt);
+  xpMult=1;
+  const d=DIFFS[G.diffIdx];
+  const isSudden=G.mode==='sudden';
+  G={
+    ...G,daily,
+    max:d.range,
+    maxGuess:isSudden?1:d.maxGuess,
+    secret:daily?seeded(dailySeed(),d.range):Math.floor(Math.random()*d.range)+1,
+    guesses:0,history:[],done:false,
+    startTime:Date.now(),timeLeft:d.time,
+    usedHint:false,extra:0,
   };
-
-  // Reset reward buttons
   ['rwd-extra','rwd-hint','rwd-reveal','rwd-xp'].forEach(id=>{
-    const btn=document.getElementById(id);
-    if(btn){btn.disabled=false;btn.classList.remove('used')}
+    const b=document.getElementById(id);
+    if(b){b.disabled=false;b.classList.remove('used')}
   });
-  document.getElementById('hint-btn').disabled = true;
-
-  renderUI();
-  renderDots();
-  document.getElementById('result-area').classList.remove('show');
+  document.getElementById('hint-btn').disabled=true;
+  document.getElementById('result').classList.remove('show');
   document.getElementById('game-ui').style.display='';
   document.getElementById('history').innerHTML='';
-  document.getElementById('msg').textContent = daily ? '📅 Daily Challenge! Good luck!' : 'Enter your first guess!';
-  document.getElementById('prox-wrap').style.display = mode==='hot'?'block':'none';
-  document.getElementById('timer-el').style.display = (mode==='speed'||DIFFS[G.diffIdx].time>0)?'block':'none';
-  document.getElementById('num-input').value='';
-  document.getElementById('num-input').focus();
-  document.getElementById('num-input').max=G.max;
+  document.getElementById('msg').textContent=daily?'📅 Daily Challenge!':'Enter your first guess!';
+  document.getElementById('prox').style.display=G.mode==='hot'?'block':'none';
+  const showTimer=G.mode==='speed'||d.time>0;
+  document.getElementById('timer').style.display=showTimer?'block':'none';
+  document.getElementById('num-in').value='';
+  document.getElementById('num-in').max=G.max;
   document.getElementById('guess-btn').disabled=false;
-
-  if(mode==='speed'||DIFFS[G.diffIdx].time>0){
-    G.timeLeft = mode==='speed'?30:DIFFS[G.diffIdx].time;
-    startTimer();
-  }
+  document.getElementById('range-txt').textContent=`Guess 1–${G.max}`;
+  renderDots();
+  if(showTimer){G.timeLeft=G.mode==='speed'?30:d.time;startTimer()}
+  setTimeout(()=>document.getElementById('num-in').focus(),100);
 }
 
 function launchDaily(){
-  if(state.dailyDate===todayKey()&&state.dailyDone){showToast('You already completed today\'s challenge!');return}
+  if(S.dailyDate===todayKey()&&S.dailyDone){showToast('Already done today!');return}
   G.diffIdx=0;G.mode='classic';
-  setActiveBtn('.diff-btn',0);setActiveTab('classic');
+  setDiff(0);setMode('classic');
   newGame(true);
-  document.getElementById('daily-badge-done').style.display='none';
-  document.getElementById('daily-badge-go').style.display='block';
 }
 
-// ── RENDERING ────────────────────────────────────────────
-function renderUI(){
-  const diff=DIFFS[G.diffIdx||0];
-  document.getElementById('range-txt').textContent=`Guess 1 – ${diff.range}`;
+// ── GUESS ──
+document.getElementById('num-in').addEventListener('keydown',e=>{if(e.key==='Enter')doGuess()});
+
+function doGuess(){
+  if(G.done)return;
+  const inp=document.getElementById('num-in');
+  const val=parseInt(inp.value);
+  if(isNaN(val)||val<1||val>G.max){
+    inp.style.animation='shake .4s ease';
+    inp.addEventListener('animationend',()=>inp.style.animation='',{once:true});
+    showToast(`Enter 1–${G.max}`);return;
+  }
+  G.guesses++;G.history.push(val);
+  document.getElementById('hint-btn').disabled=false;
+  inp.value='';
+
+  const diff=val-G.secret;
+  const abs=Math.abs(diff);
+  const total=G.maxGuess+G.extra;
+
+  if(abs===0){endGame(true);return}
+
+  if(G.mode==='hot'){
+    const pct=Math.max(0,100-Math.round(abs/G.max*150));
+    document.getElementById('prox-fill').style.width=pct+'%';
+    document.getElementById('prox-fill').style.background=`hsl(${Math.round(pct*1.2)},90%,55%)`;
+    document.getElementById('prox-dist').textContent=`${abs} away`;
+    const temps=['🥶 Ice Cold','❄️ Cold','🌊 Cool','🌤 Warm','🔥 Hot!','🌋 Burning!!'];
+    document.getElementById('temp-txt').textContent=temps[Math.min(5,Math.floor(pct/17))];
+  }
+
+  const close=abs<=5?' Very close!':'';
+  document.getElementById('msg').textContent=diff>0?`📉 Too high!${close}`:`📈 Too low!${close}`;
+  addRow(val,diff);
+  renderDots();
+  if(G.guesses>=total)endGame(false);
+}
+
+function addRow(val,diff){
+  const h=document.getElementById('history');
+  const d=document.createElement('div');d.className='h-item';
+  const cls=diff>0?'c-red':'c-cyan';
+  const ico=diff>0?'⬇️':'⬆️';
+  d.innerHTML=`<span class="h-num ${cls}">${val}</span><span class="h-hint ${cls}">${ico} ${diff>0?'Too High':'Too Low'}</span><span class="c-muted">#${G.guesses}</span>`;
+  h.prepend(d);
 }
 
 function renderDots(){
-  const row=document.getElementById('dots-row');
-  row.innerHTML='';
-  const total=G.maxGuess+(G.extraGuesses||0);
+  const row=document.getElementById('dots');row.innerHTML='';
+  const total=G.maxGuess+G.extra;
   for(let i=0;i<total;i++){
     const d=document.createElement('div');
     d.className='dot'+(i<G.guesses?' used':i===G.guesses?' active':'');
@@ -868,320 +731,205 @@ function renderDots(){
   }
 }
 
-function renderStats(){
-  document.getElementById('s-games').textContent=state.games;
-  document.getElementById('s-win').textContent=state.games?Math.round(state.wins/state.games*100)+'%':'–';
-  document.getElementById('s-streak').textContent=state.streak;
-  document.getElementById('s-best').textContent=state.bestGuess??'–';
-}
-
-function renderLevel(){
-  const xpInLevel=state.xp%XP_PER_LEVEL;
-  const pct=Math.round(xpInLevel/XP_PER_LEVEL*100);
-  document.getElementById('lv-txt').textContent=`Lv.${state.level}`;
-  document.getElementById('xp-inner').style.width=pct+'%';
-  document.getElementById('xp-label').textContent=state.xp+'xp';
-}
-
-function renderAchievements(){
-  const grid=document.getElementById('ach-grid');
-  grid.innerHTML='';
-  ACHIEVEMENTS.forEach(a=>{
-    const unlocked=state.achievements.includes(a.id);
-    const div=document.createElement('div');
-    div.className='ach-item'+(unlocked?' unlocked':'');
-    div.innerHTML=`<span class="ach-ico">${a.ico}</span><div class="ach-name">${a.name}</div><div class="ach-hint">${unlocked?a.desc:'???'}</div>`;
-    grid.appendChild(div);
-  });
-}
-
-// ── GUESS LOGIC ──────────────────────────────────────────
-document.getElementById('num-input').addEventListener('keydown',e=>{
-  if(e.key==='Enter') doGuess();
-});
-
-function doGuess(){
-  if(G.done) return;
-  const inp=document.getElementById('num-input');
-  const val=parseInt(inp.value);
-  if(isNaN(val)||val<1||val>G.max){
-    inp.style.animation='shake .4s ease';
-    inp.addEventListener('animationend',()=>{inp.style.animation=''},{ once:true });
-    showToast(`Enter a number between 1 and ${G.max}`);
-    return;
-  }
-
-  G.guesses++;
-  G.history.push(val);
-  document.getElementById('hint-btn').disabled=false;
-  inp.value='';
-
-  const diff=val-G.secret;
-  const absDiff=Math.abs(diff);
-  const maxGuessTotal=G.maxGuess+(G.extraGuesses||0);
-
-  if(absDiff===0){
-    endGame(true);
-    return;
-  }
-
-  // Hot/cold proximity
-  if(G.mode==='hot'){
-    const pct=Math.max(0,100-Math.round(absDiff/G.max*100)*1.5);
-    document.getElementById('prox-fill').style.width=pct+'%';
-    const hue=Math.round(pct*1.2);
-    document.getElementById('prox-fill').style.background=`hsl(${hue},90%,55%)`;
-    document.getElementById('prox-dist').textContent=`${absDiff} away`;
-    const temps=['🥶 Freezing','❄️ Cold','🌊 Cool','🌤 Warm','🔥 Hot','🌋 Burning!'];
-    const ti=Math.min(5,Math.floor(pct/17));
-    document.getElementById('temp-txt').textContent=temps[ti];
-    document.getElementById('temp-txt').style.color=`hsl(${hue},90%,65%)`;
-  }
-
-  // Direction message
-  let msg='';
-  if(diff>0) msg=`📉 Too high! Try lower.${absDiff<=5?' Very close!':''}`;
-  else msg=`📈 Too low! Try higher.${absDiff<=5?' Very close!':''}`;
-  document.getElementById('msg').textContent=msg;
-
-  // History row
-  addHistoryRow(val,diff);
-  renderDots();
-
-  // Out of guesses?
-  if(G.guesses>=maxGuessTotal){
-    endGame(false);
-  }
-}
-
-function addHistoryRow(val,diff){
-  const hist=document.getElementById('history');
-  const div=document.createElement('div');
-  div.className='h-item';
-  const cls=diff===0?'c-win':diff>0?'c-high':'c-low';
-  const icon=diff===0?'✅':diff>0?'⬇️':'⬆️';
-  div.innerHTML=`<span class="h-num ${cls}">${val}</span><span class="h-hint ${cls}">${icon} ${diff===0?'Correct!':diff>0?'Too High':'Too Low'}</span><span class="c-muted" style="font-size:10px;font-family:'JetBrains Mono',monospace">Guess ${G.guesses}</span>`;
-  hist.prepend(div);
-}
-
-// ── END GAME ─────────────────────────────────────────────
+// ── END GAME ──
 function endGame(won){
-  G.done=true;
-  clearInterval(timerInterval);
-  state.lastWon=won;
-  state.lastGuessCount=G.guesses;
-  state.lastMode=G.mode;
-  state.lastDiff=G.diffIdx;
-  state.lastTime=Math.round((Date.now()-G.startTime)/1000);
-  state.usedHint=G.usedHint;
-  state.games++;
-
+  G.done=true;clearInterval(timerInt);
+  S.lastWon=won;S.lastGuesses=G.guesses;S.lastMode=G.mode;
+  S.lastDiff=G.diffIdx;S.lastTime=Math.round((Date.now()-G.startTime)/1000);
+  S.usedHint=G.usedHint;S.games++;
   if(won){
-    state.wins++;
-    state.streak++;
-    if(!state.bestGuess||G.guesses<state.bestGuess) state.bestGuess=G.guesses;
-    const xpEarned=Math.round(DIFFS[G.diffIdx].xpBase*(1+1/G.guesses)*xpMultiplier);
-    state.xp+=xpEarned;
-    const newLevel=Math.floor(state.xp/XP_PER_LEVEL)+1;
-    if(newLevel>state.level){state.level=newLevel;showToast(`🚀 Level Up! You're now Level ${state.level}!`);}
-    if(G.daily){ state.dailyDate=todayKey(); state.dailyDone=true; state.lastWon=true; }
-    save();
-    checkAchievements();
-    showResult(true,xpEarned);
-    triggerInterstitialIfNeeded();
+    S.wins++;S.streak++;
+    if(!S.best||G.guesses<S.best)S.best=G.guesses;
+    const xp=Math.round(DIFFS[G.diffIdx].xp*(1+1/G.guesses)*xpMult);
+    S.xp+=xp;
+    const nl=Math.floor(S.xp/XP_PER_LEVEL)+1;
+    if(nl>S.level){S.level=nl;showToast(`🚀 Level Up! Level ${S.level}!`)}
+    if(G.daily){S.dailyDate=todayKey();S.dailyDone=true}
+    save();checkAchs();showResult(true,xp);
   } else {
-    state.streak=0;
-    save();
-    showResult(false,0);
-    triggerInterstitialIfNeeded();
+    S.streak=0;save();showResult(false,0);
   }
-
-  renderStats();
-  renderLevel();
-  renderDailyBadge();
+  renderStats();renderLevel();renderDailyBadge();
+  playCount++;
+  if(playCount%3===0){adBreak({type:'next',name:'interstitial',adBreakDone:()={}})}
 }
 
 function showResult(won,xp){
   document.getElementById('game-ui').style.display='none';
-  const ra=document.getElementById('result-area');
-  ra.classList.add('show');
-
+  const r=document.getElementById('result');r.classList.add('show');
   if(won){
-    const emojis=['🎉','🏆','⚡','🌟','🎯'][Math.min(G.guesses-1,4)];
-    document.getElementById('r-emoji').textContent=emojis;
+    const em=['🎉','🏆','⚡','🌟','🎯'][Math.min(G.guesses-1,4)];
+    document.getElementById('r-emoji').textContent=em;
     document.getElementById('r-title').textContent=G.guesses===1?'Perfect!':'You Won!';
     document.getElementById('r-title').style.color='var(--green)';
     document.getElementById('r-sub').textContent=`Found ${G.secret} in ${G.guesses} guess${G.guesses!==1?'es':''}!`;
-    document.getElementById('r-xp').textContent=`+${xp} XP earned`;
+    document.getElementById('r-xp').textContent=`+${xp} XP`;
   } else {
     document.getElementById('r-emoji').textContent='💔';
     document.getElementById('r-title').textContent='Game Over';
-    document.getElementById('r-title').style.color='var(--accent)';
+    document.getElementById('r-title').style.color='var(--red)';
     document.getElementById('r-sub').textContent=`The number was ${G.secret}`;
     document.getElementById('r-xp').textContent='Better luck next time!';
   }
 }
 
-// ── TIMER ────────────────────────────────────────────────
+// ── TIMER ──
 function startTimer(){
-  const el=document.getElementById('timer-el');
-  el.style.display='block';
-  el.className='timer-display';
-  el.textContent=G.timeLeft+'s';
-  timerInterval=setInterval(()=>{
+  const el=document.getElementById('timer');
+  el.className='timer';el.textContent=G.timeLeft+'s';
+  timerInt=setInterval(()=>{
     G.timeLeft--;
     el.textContent=G.timeLeft+'s';
-    if(G.timeLeft<=10) el.classList.add('warn');
-    if(G.timeLeft<=5) el.classList.add('danger');
-    if(G.timeLeft<=0){ clearInterval(timerInterval); endGame(false); }
+    if(G.timeLeft<=10)el.classList.add('warn');
+    if(G.timeLeft<=5)el.classList.add('danger');
+    if(G.timeLeft<=0){clearInterval(timerInt);endGame(false)}
   },1000);
 }
 
-// ── HINTS ────────────────────────────────────────────────
+// ── HINT ──
 function useHint(){
-  if(G.done||G.guesses===0) return;
+  if(G.done||G.guesses===0)return;
   G.usedHint=true;
   const last=G.history[G.history.length-1];
   const lo=Math.max(1,Math.min(last,G.secret)-Math.floor(G.max*0.15));
   const hi=Math.min(G.max,Math.max(last,G.secret)+Math.floor(G.max*0.15));
-  showToast(`💡 It's between ${lo} and ${hi}`);
+  showToast(`💡 Between ${lo} and ${hi}`);
   document.getElementById('hint-btn').disabled=true;
 }
 
-// ── REWARDED ADS ─────────────────────────────────────────
-const REWARDS = {
-  extra:  {ico:'➕',ttl:'+2 Extra Guesses',sub:'You\'ll get 2 more attempts this round.'},
-  hint:   {ico:'💡',ttl:'Free Hint',       sub:'We\'ll narrow the range for you.'},
-  reveal: {ico:'👁', ttl:'Digit Reveal',   sub:'We\'ll reveal the first digit of the secret number.'},
-  xp:     {ico:'⚡',ttl:'2× XP Boost',    sub:'Double XP for the rest of this game!'},
+// ── REWARDED ADS ──
+const REWARDS={
+  extra:{ico:'➕',ttl:'+2 Extra Guesses',sub:'2 more attempts added!'},
+  hint: {ico:'💡',ttl:'Free Hint',        sub:'Range narrowed for you.'},
+  reveal:{ico:'👁',ttl:'Digit Reveal',    sub:'First digit revealed!'},
+  xp:   {ico:'⚡',ttl:'2× XP Boost',     sub:'Double XP this game!'},
 };
 
 function watchAd(type){
-  if(G.done && type!=='xp') return;
   pendingReward=type;
   const r=REWARDS[type];
   document.getElementById('ad-ico').textContent=r.ico;
   document.getElementById('ad-ttl').textContent=r.ttl;
   document.getElementById('ad-sub').textContent=r.sub;
-  document.getElementById('ad-prog').style.width='0%';
+  document.getElementById('ad-fill').style.width='0%';
   document.getElementById('btn-claim').classList.remove('ready');
-  document.getElementById('ad-timer').textContent='Watching… 5s';
+  document.getElementById('ad-timer-txt').textContent='Watching… 5s';
   document.getElementById('ad-overlay').classList.add('show');
-
-  // Fire REAL rewarded ad via AdSense Placement API
   adBreak({
-    type:'reward',
-    name:'numguess_reward_'+type,
-    beforeAd:()=>{ /* pause game if needed */ },
-    afterAd:()=>{ /* resume */ },
-    adDismissed:()=>{ cancelAd(); },
-    adViewed:()=>{ completedAd(); },
-    adBreakDone:(placementInfo)=>{ if(placementInfo.breakStatus==='notReady') simulateAd(); }
+    type:'reward',name:'reward_'+type,
+    adViewed:()=>completedAd(),
+    adDismissed:()=>cancelAd(),
+    adBreakDone:(info)=>{if(info.breakStatus!=='viewed')simulateAd()}
   });
-
-  // Fallback: simulate ad (removes in prod when AdSense is live)
   simulateAd();
 }
 
 function simulateAd(){
-  let secs=5;
-  clearInterval(adTimerInterval);
-  adTimerInterval=setInterval(()=>{
-    secs--;
-    const pct=(5-secs)/5*100;
-    document.getElementById('ad-prog').style.width=pct+'%';
-    document.getElementById('ad-timer').textContent=secs>0?`Watching… ${secs}s`:'Done!';
-    if(secs<=0){ clearInterval(adTimerInterval); completedAd(); }
+  let s=5;clearInterval(adInt);
+  adInt=setInterval(()=>{
+    s--;
+    document.getElementById('ad-fill').style.width=((5-s)/5*100)+'%';
+    document.getElementById('ad-timer-txt').textContent=s>0?`Watching… ${s}s`:'Done!';
+    if(s<=0){clearInterval(adInt);completedAd()}
   },1000);
 }
 
 function completedAd(){
   document.getElementById('btn-claim').classList.add('ready');
-  document.getElementById('ad-timer').textContent='✅ Ready to claim!';
+  document.getElementById('ad-timer-txt').textContent='✅ Ready!';
 }
 
 function claimReward(){
   const type=pendingReward;
   document.getElementById('ad-overlay').classList.remove('show');
-  clearInterval(adTimerInterval);
-
-  // Mark button used
-  const btnId={'extra':'rwd-extra','hint':'rwd-hint','reveal':'rwd-reveal','xp':'rwd-xp'}[type];
-  const btn=document.getElementById(btnId);
+  clearInterval(adInt);
+  const ids={extra:'rwd-extra',hint:'rwd-hint',reveal:'rwd-reveal',xp:'rwd-xp'};
+  const btn=document.getElementById(ids[type]);
   if(btn){btn.disabled=true;btn.classList.add('used')}
-
-  if(type==='extra'){
-    G.extraGuesses=(G.extraGuesses||0)+2;
-    renderDots();
-    showToast('➕ +2 guesses added!');
-  } else if(type==='hint'){
-    G.usedHint=true;
-    const lo=Math.max(1,G.secret-Math.floor(G.max*0.15));
-    const hi=Math.min(G.max,G.secret+Math.floor(G.max*0.15));
-    showToast(`💡 It's between ${lo} and ${hi}`);
-  } else if(type==='reveal'){
-    const firstDigit=String(G.secret)[0];
-    showToast(`👁 The number starts with ${firstDigit}`);
-  } else if(type==='xp'){
-    xpMultiplier=2;
-    showToast('⚡ 2× XP active for this game!');
-  }
+  if(type==='extra'){G.extra=(G.extra||0)+2;renderDots();showToast('➕ +2 guesses!')}
+  else if(type==='hint'){G.usedHint=true;const lo=Math.max(1,G.secret-Math.floor(G.max*0.15));const hi=Math.min(G.max,G.secret+Math.floor(G.max*0.15));showToast(`💡 Between ${lo} and ${hi}`)}
+  else if(type==='reveal'){showToast(`👁 Starts with: ${String(G.secret)[0]}`)}
+  else if(type==='xp'){xpMult=2;showToast('⚡ 2× XP active!')}
 }
 
-function cancelAd(){
-  clearInterval(adTimerInterval);
-  document.getElementById('ad-overlay').classList.remove('show');
-  pendingReward=null;
+function cancelAd(){clearInterval(adInt);document.getElementById('ad-overlay').classList.remove('show');pendingReward=null}
+
+// ── SHARE ──
+function shareResult(){
+  const dots=G.history.map(v=>v===G.secret?'🟢':v>G.secret?'🔴':'🔵').join('');
+  const txt=`🎯 NumGuess${G.daily?' Daily':''}\n${S.lastWon?`Won in ${G.guesses} guesses!`:'Lost 💀'}\n${dots}\nhttps://sourabthebillionaire-collab.github.io/numguess/`;
+  if(navigator.share)navigator.share({text:txt}).catch(()=>{});
+  else navigator.clipboard.writeText(txt).then(()=>showToast('📋 Copied!'));
 }
 
-// ── INTERSTITIAL (every 3rd play-again) ──────────────────
-function triggerInterstitialIfNeeded(){
-  playAgainCount++;
-  if(playAgainCount%3===0){
-    adBreak({
-      type:'next',
-      name:'numguess_interstitial',
-      adBreakDone:()=>{}
-    });
-  }
-}
-
-// ── ACHIEVEMENTS ─────────────────────────────────────────
-function checkAchievements(){
+// ── ACHIEVEMENTS ──
+function checkAchs(){
   ACHIEVEMENTS.forEach(a=>{
-    if(!state.achievements.includes(a.id) && a.check(state)){
-      state.achievements.push(a.id);
-      save();
-      showAchievementToast(a);
-      renderAchievements();
+    if(!S.achs.includes(a.id)&&a.check(S)){
+      S.achs.push(a.id);save();showAchToast(a);renderAchs();
     }
   });
 }
 
-function showAchievementToast(a){
-  document.getElementById('ach-t-ico').textContent=a.ico;
-  document.getElementById('ach-t-name').textContent=a.name;
-  document.getElementById('ach-t-desc').textContent=a.desc;
+function showAchToast(a){
+  document.getElementById('at-ico').textContent=a.ico;
+  document.getElementById('at-name').textContent=a.name;
+  document.getElementById('at-desc').textContent=a.desc;
   const t=document.getElementById('ach-toast');
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-// ── SHARE ────────────────────────────────────────────────
-function shareResult(){
-  const dots=G.history.map((v,i)=>{
-    if(v===G.secret) return '🟢';
-    return v>G.secret?'🔴':'🔵';
-  }).join('');
-  const text=`🎯 NumGuess ${G.daily?'Daily':''}
-${G.done&&state.lastWon?`Won in ${G.guesses}/${G.maxGuess+(G.extraGuesses||0)} guesses!`:'Lost 💀'}
-${dots}
-Play at numguess.app`;
-  if(navigator.share){navigator.share({text}).catch(()=>{})}
-  else{navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied to clipboard!'))}
+// ── RENDER ──
+function renderStats(){
+  document.getElementById('s-g').textContent=S.games;
+  document.getElementById('s-w').textContent=S.games?Math.round(S.wins/S.games*100)+'%':'–';
+  document.getElementById('s-s').textContent=S.streak;
+  document.getElementById('s-b').textContent=S.best??'–';
 }
 
-// ── TOAST ────────────────────────────────────────────────
+function renderLevel(){
+  const pct=Math.round((S.xp%XP_PER_LEVEL)/XP_PER_LEVEL*100);
+  document.getElementById('lv-txt').textContent=`Lv.${S.level}`;
+  document.getElementById('xp-inner').style.width=pct+'%';
+  document.getElementById('xp-lbl').textContent=S.xp+'xp';
+}
+
+function renderAchs(){
+  const g=document.getElementById('ach-grid');g.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    const on=S.achs.includes(a.id);
+    const d=document.createElement('div');d.className='ach'+(on?' on':'');
+    d.innerHTML=`<span class="ach-ico">${a.ico}</span><div class="ach-name">${a.name}</div><div class="ach-hint">${on?a.desc:'???'}</div>`;
+    g.appendChild(d);
+  });
+}
+
+function renderDailyBadge(){
+  const done=S.dailyDate===todayKey()&&S.dailyDone;
+  document.getElementById('daily-done').style.display=done?'block':'none';
+  document.getElementById('daily-go').style.display=done?'none':'block';
+}
+
+// ── UI ──
+function setMode(mode){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+}
+function setDiff(i){
+  document.querySelectorAll('.diff-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    G.mode=btn.dataset.mode;setMode(G.mode);newGame();
+  });
+});
+document.querySelectorAll('.diff-btn').forEach((btn,i)=>{
+  btn.addEventListener('click',()=>{
+    G.diffIdx=i;setDiff(i);newGame();
+  });
+});
+
 let toastTimer=null;
 function showToast(txt){
   const t=document.getElementById('toast');
@@ -1190,50 +938,8 @@ function showToast(txt){
   toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-// ── DAILY BADGE ──────────────────────────────────────────
-function renderDailyBadge(){
-  if(state.dailyDate===todayKey()&&state.dailyDone){
-    document.getElementById('daily-badge-done').style.display='block';
-    document.getElementById('daily-badge-go').style.display='none';
-  }
-}
-
-// ── UI EVENT HANDLERS ────────────────────────────────────
-function setActiveBtn(selector,idx){
-  document.querySelectorAll(selector).forEach((b,i)=>{
-    b.classList.toggle('active',i===idx);
-  });
-}
-
-function setActiveTab(mode){
-  document.querySelectorAll('.mode-btn').forEach(b=>{
-    b.classList.toggle('active',b.dataset.mode===mode);
-  });
-}
-
-document.querySelectorAll('.mode-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    G.mode=btn.dataset.mode;
-    newGame();
-  });
-});
-
-document.querySelectorAll('.diff-btn').forEach((btn,i)=>{
-  btn.addEventListener('click',()=>{
-    setActiveBtn('.diff-btn',i);
-    G.diffIdx=i;
-    newGame();
-  });
-});
-
-// ── BOOT ─────────────────────────────────────────────────
-G.diffIdx=0;G.mode='classic';
-renderStats();
-renderLevel();
-renderAchievements();
-renderDailyBadge();
+// ── BOOT ──
+renderStats();renderLevel();renderAchs();renderDailyBadge();
 newGame();
 </script>
 </body>
