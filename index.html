@@ -938,8 +938,16 @@ function showToast(txt){
 }
 
 // ── BOOT ──
-renderStats();renderLevel();renderAchs();renderDailyBadge();
+renderStats();
+renderLevel();
+renderAchs();
+renderDailyBadge();
 newGame();
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js');
+}
 </script>
 </body>
 </html>
